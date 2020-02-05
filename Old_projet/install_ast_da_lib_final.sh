@@ -9,100 +9,17 @@
 # AUTEURS:
 #  Daniel DOS SANTOS < danielitto91@gmail.com >
 #================================================================#
-# LICENCE: CC BY-SA 4.0
-#  This work is licensed under 
-#  the Creative Commons Attribution-ShareAlike 4.0 International License.
-#  To view a copy of this license,
-#  visit http://creativecommons.org/licenses/by-sa/4.0/ 
-#  or send a letter to 
-#  Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
-#================================================================#
-# DATE DE CRÉATION: 16/05/2018
-#================================================================#
-# VERSIONS:
-#  16/05/2018 V.3
-#  Ajout de DAHDI et libpri.
-#  Ajout du contrôle des fichiers et dossiers.
-#
-#  17/05/2018 V.3.2
-#  Ajout et vérifications de dépendances supplémentaires.
-#
-#  18/05/2018 V.3.5
-#  Utilisation de Git pour l’installation de DAHDI.
-#
-#  19/05/2018 V.4.5
-#  Ajout d’affects graphiques comme Cowsay.
-#  Correction de syntaxe et vérification de paquets inutilisés.
-#  Ajout d'une bannière.
-#
-#  20/05/2018 V.5.1
-#  Ajout d'un mode d’installation par les dépôts Debian.
-#  Correction des fautes d’orthographe.
-#  Création des fonctions.
-#  Optimisation du nombre de lignes sur le scripte. 
-#================================================================#
-# USAGE: ./script_install_ast_V5.sh
+# USAGE: ./install_asterisk_V1.sh
 #================================================================#
 # NOTES:
-#  Au lancement du script nous avons un choix à faire soit on fait
-#  une installation par les dépôts de Debian avec apt-get install
-#  soit on fait une installation par compilation des sources.
-#
-#  Soyez attentifs car le script est interactif et donc 
-#  il va vous guider en vous demandant de valider certaines
-#  configurations. 
-#
-#  Avant la fin du script nous avons un processus de vérification 
-#  du bon fonctionnement d'Asterisk, ainsi que l'affichage des
-#  configurations des comptes Utilisateur par défaut.  
-#  
-#  Il reste l'identation à refaire, la vérification de libpri,
-#  des testes sur DAHDI, vérifier l'utilité de chaque paquet
-#  téléchargé, compatibiliser le scripte sur d'autres distributions,
-#  Armoniser les couleurs, optimiser le code en général, créer une
-#  documentation...
-#  
-#================================================================#
-# BASH VERSION: GNU bash 4.4.12
+# 
 #================================================================#
 
 
 # Variables de chemins
 dire="/usr/src/asterisk"
 
-#Déclaration des variables de couleur
-vertclair='\e[1;32m'
-orange='\e[0;33m'
-jaune='\e[1;33m'
-neutre='\e[0;m'
-bleuclair='\e[1;34m'
-rougefonce='\e[0;31m'
-
 #___LES FONCTIONS___
-function info_compt
-        {
-        clear
-        echo "
-        ###########################################
-        ###########################################
-                < Informations sur les comptes >
-                 ------------------------------
-
-                Utilisateurs | Extensions
-                -------------------------
-                daniel          1101
-                jovial          1102    o
-                                       /|\ X2
-                code secret: kcx       / \\
-                Messagerie: 666
-                Code messagerie: 1234
-                Context: finance
-                Teste d'écho: 111
-
-        ===========================================
-        "
-        }
-
 function verif_ip
         {
         ip="$(ifconfig eth0 | grep 'inet adr:' | cut -d: -f2 | awk '{ print $1}')"
@@ -112,31 +29,12 @@ function verif_ip
 function cowsay
         {
         clear
-        echo ""
-        echo -e " $orange ___________________________         $neutre "
-        echo -e " $orange< $1 >        $neutre "
-        echo -e " $orange ---------------------------         $neutre "
-        echo -e " $vertclair        \   ^__^              $neutre "
-        echo -e " $vertclair         \  (@@)\_______      $neutre "
-        echo -e " $vertclair          \ (__)\       )\/\  $neutre "
-        echo -e " $vertclair                ||----w |     $neutre "
-        echo -e " $vertclair                ||     ||     $neutre "
-        }
-
-function ban
-        {
-        clear
-        #Ici l'option -e permet la prise en compte des couleurs.
-        echo -e "\n $orange ####################################################### $neutre \n"
-        echo -e " $bleuclair           #__$1__#           $neutre "
-        echo -e " $bleuclair           #__---------------------------------__#           $neutre "
-        echo -e " $bleuclair           #__$2__#           $neutre "
-        echo -e "\n $orange ####################################################### $neutre \n"
+        echo -e "\n $1 \n"
         }
         
 function teste0
         {
-	echo -e "\n $bleuclair TEST installation $neutre \n"
+	echo -e "\n TEST installation \n"
 	read -p "Valider pour continuer"
 
 	#permet de voir le statut d'asterisk s'il est activé ou désactivé
@@ -166,12 +64,12 @@ function teste0
 	echo "$port"
 	sleep 2
 	echo ""
-	echo -e "\n $rougefonce FIN du test $neutre \n"
+	echo -e "\n FIN du test \n"
 	}
 
 function sauvegarde
     {
-    echo -e "\n $rougefonce Sauvegarde des fichiers de configuration $neutre \n"
+    echo -e "\n Sauvegarde des fichiers de configuration \n"
     cd /etc/asterisk/
 
     #création d'un dossier qui va sauvegarder tous les fichiers de configuration d'asterisk
@@ -199,73 +97,26 @@ function question
     {
     #Dans une mise à jour de la version 12 d’Asterisk, ARI a été ajouté.
     #contrôler l’état d’une boîte de réception par des systèmes externes et peut entrée en conflit avec une configuration basique.
-    echo -e "\n $rougefonce Dé-commenter languageprefix=yes dans asterisk.conf ligne 30 $neutre \n"
+    echo -e "\n Dé-commenter languageprefix=yes dans asterisk.conf ligne 30 \n"
     read -p "Valider pour continuer"
     nano -c /etc/asterisk/asterisk.conf
     sleep 2
 
-    echo -e "\n $rougefonce ligne 115 : remplacer public par default \n"
+    echo -e "\n ligne 115 : remplacer public par default \n"
     read -p "Valider pour continuer"
     nano -c /etc/asterisk/sip.conf
     sleep 2
 
-    echo -e "\n $rougefonce Rechargez les configurations d'asterisk avec la commande reload et exit pour quitter! $neutre \n"
+    echo -e "\n Rechargez les configurations d'asterisk avec la commande reload et exit pour quitter! \n"
     read -p "valider pour continuer"
     asterisk -rvvvv
     sleep 2
     }
 
-function fin
-        {
-        #Déclaration des variables de couleur
-        vertclair='\e[1;32m'
-        orange='\e[0;33m'
-        jaune='\e[1;33m'
-        neutre='\e[0;m'
-        bleuclair='\e[1;34m'
-        rougefonce='\e[0;31m'
-
-        for couleur in "$vertclair" "$orange" "$jaune" "$bleuclair" "$rougefonce"
-        do
-                clear
-                echo -e "$couleur
-                 _____   _                                       _           _
-                |  ___| (_)  _ __            ___    ___   _ __  (_)  _ __   | |_
-                | |_    | | | '_ \          / __|  / __| | '__| | | | '_ \  | __|
-                |  _|   | | | | | |         \__ \ | (__  | |    | | | |_) | | |_
-                |_|     |_| |_| |_|____ ____|___/  \___| |_|    |_| | .__/   \__|
-                                 |_____|_____|                      |_|
-
-                $neutre"
-                sleep 1
-        done
-        }
-
-function start
-        {
-        for couleur in "$vertclair" "$orange" "$jaune" "$bleuclair" "$rougefonce"
-        do
-                clear
-                echo -e "$couleur
-
-                   _/\\__    / \\    / ___|  |_   _| | ____| |  _ \\  |_ _| / ___|  | |/ / __/\\__
-                  \\    /   / _ \\   \\___ \\    | |   |  _|   | |_) |  | |  \\___ \\  | ' /  \\    /
-                  /_  _\\  / ___ \\   ___) |   | |   | |___  |  _ <   | |   ___) | | . \\  /_  _\\
-                    \\/   /_/   \\_\\ |____/    |_|   |_____| |_| \\_\\ |___| |____/  |_|\\_\\   \\/
-
-                $neutre"
-                sleep 1
-        done
-        }
-
-# Bannière du script
-# bannière faite avec la commande figlet
 clear
-start
+echo -e "\n Script d'installation d'Asterisk \n"
 
-echo ""
-echo -e "\n $vertclair Installation par les dépôts Debian ou par compilation des sources ? $neutre"
-echo -e "\n $jaune --------------------------------------------------------------------\n $neutre"
+echo -e "\n Installation par les dépôts Debian ou par compilation des sources ?"
 read -p "Dépôs[d], Compilation[c] ==> " -n 1 net
 echo ""
            
@@ -277,7 +128,7 @@ apt-get install linux-headers-$(uname -r) -y
 if [ $net = "d" ] || [ $net = "D" ]
 then
 
-ban "   INSTALLATION ASTERISK V.13    " "PAR LES DEPOTS DEBIAN JESSIE 8.10"
+echo -e "\n INSTALLATION ASTERISK V.13 PAR LES DEPOTS DEBIAN JESSIE 8.10 \n"
 
 #Préparation à l’environnement d'installation d'Asterisk, installation de dépendances.
 apt-get install libpri-dev -y
@@ -317,65 +168,6 @@ cowsay "Configuration interactive"
 sleep 3
 
 question
-
-cowsay "Configuration basique des comptes"
-
-echo '[general]
-hasvoicemail = yes
-hassip = yes
-
-[template_users](!)
-type = friend
-host = dynamic
-dtmfmode = rfc2833
-disallow = all
-allow = ulaw
-allow = alaw
-allow = gsm
-secret = kcx
-
-[1101](template_users)
-fullname = daniel DOS SANTOS
-username = daniel
-callerid = "daniel" <1101>
-mailbox = 1101
-context = finance
-
-[1102](template_users)
-fullname = jovial Ndongui
-username = jovial
-callerid = "jovial" <1102>
-mailbox = 1102
-context = finance' > users.conf
-
-echo '[general]
-static = yes
-writeprotect = yes
-autofallthrough=yes
-clearglobalvars = yes
-
-[finance]
-exten => _11XX, 1 ,DIAL(SIP/${EXTEN},20)
-exten => _11XX, 2 ,Voicemail(${EXTEN}@finance)
-
-exten => 666, 1, Answer()
-exten => 666, 2, VoiceMailMain(${CALLERID(num)}@finance)
-
-exten => 111, 1, answer
-exten => 111, 2, Playback(demo-echotest)
-exten => 111, 3, Echo()' > extensions.conf
-
-echo '[general]
-maxmsg = 100
-maxsecs = 0
-minsecs = 0
-maxlogins = 3
-review = yes
-saycid = yes
-
-[finance]
-1101 => 1234, daniel
-1102 => 1234, jovial' > voicemail.conf
 
 service asterisk stop
 sleep 1
