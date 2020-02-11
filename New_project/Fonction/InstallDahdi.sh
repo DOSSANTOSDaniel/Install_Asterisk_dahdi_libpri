@@ -12,3 +12,10 @@ cd /usr/local/src/dahdi-linux-complete-3.1.0+3.1.0/
 make
 make install
 make config
+
+lsmod | grep dahdi
+
+/etc/init.d/dadhi start
+
+/etc/init.d/asterisk status
+
