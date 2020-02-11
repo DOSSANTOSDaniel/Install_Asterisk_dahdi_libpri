@@ -67,4 +67,7 @@ sed -i -e 's/^documentation_language = en_US/documentation_language = fr_FR/g' /
 sed -i -e 's/^;language=en/language=fr/g' /etc/asterisk/sip.conf
 sed -i -e 's/^;tonezone=se/tonezone=fr/g' /etc/asterisk/sip.conf
 
+sed -i -e 's/^enabled = yes/enabled = no/g' /etc/asterisk/ari.conf
+
+
 /etc/init.d/asterisk start
