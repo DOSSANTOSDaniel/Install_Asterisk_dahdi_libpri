@@ -11,6 +11,9 @@ apt install vim -y
 apt install dialog -y
 apt install apt-utils -y
 apt install systemd -y
+apt install ufw -y
+ufw enable
+ufw status
 
 wget https://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-16.7.0.tar.gz -O /usr/local/src/asterisk-16.7.0.tar.gz
 wget https://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-16.7.0.sha256 -O /usr/local/src/asterisk-16.7.0.sha256
