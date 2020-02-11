@@ -76,3 +76,5 @@ sed -i -e 's/^;tonezone=se/tonezone=fr/g' /etc/asterisk/sip.conf
 sed -i -e 's/^enabled = yes/enabled = no/g' /etc/asterisk/ari.conf
 
 /etc/init.d/asterisk start
+
+systemctl enable asterisk
