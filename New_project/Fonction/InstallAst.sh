@@ -53,6 +53,12 @@ chown -R asterisk.asterisk /etc/asterisk
 chown -R asterisk.asterisk /var/{lib,log,spool}/asterisk
 chown -R asterisk.asterisk /usr/lib/asterisk
 
+#Créer une sauvegarde des fichiers de configurations
+cp /etc/asterisk/sip.conf /etc/asterisk/sip.conf.back
+cp /etc/asterisk/users.conf /etc/asterisk/users.conf.back
+cp /etc/asterisk/extensions.conf /etc/asterisk/extensions.conf.back
+cp /etc/asterisk/voicemail.conf /etc/asterisk/voicemail.conf.back 
+
 sed -i -e 's/^#AST_USER="asterisk"/AST_USER="asterisk"/g' /etc/default/asterisk
 sed -i -e 's/^#AST_GROUP="asterisk"/AST_GROUP="asterisk"/g' /etc/default/asterisk
 
@@ -68,6 +74,5 @@ sed -i -e 's/^;language=en/language=fr/g' /etc/asterisk/sip.conf
 sed -i -e 's/^;tonezone=se/tonezone=fr/g' /etc/asterisk/sip.conf
 
 sed -i -e 's/^enabled = yes/enabled = no/g' /etc/asterisk/ari.conf
-
 
 /etc/init.d/asterisk start
