@@ -83,3 +83,5 @@ sed -i -e 's/^enabled = yes/enabled = no/g' /etc/asterisk/ari.conf
 systemctl enable asterisk
 
 ufw allow proto tcp from any to any port 5060,5061
+
+/etc/init.d/asterisk status
