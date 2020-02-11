@@ -52,3 +52,14 @@ usermod -aG audio,dialout asterisk
 chown -R asterisk.asterisk /etc/asterisk
 chown -R asterisk.asterisk /var/{lib,log,spool}/asterisk
 chown -R asterisk.asterisk /usr/lib/asterisk
+
+sed -i -e 's/^#AST_USER="asterisk"/AST_USER="asterisk"/g' /etc/default/asterisk
+sed -i -e 's/^#AST_GROUP="asterisk"/AST_GROUP="asterisk"/g' /etc/default/asterisk
+
+sed -i -e 's/^;runuser = asterisk/runuser = asterisk/g' /etc/asterisk/asterisk.conf
+sed -i -e 's/^;rungroup = asterisk/rungroup = asterisk/g' /etc/asterisk/asterisk.conf
+
+sed -i -e 's/^;languageprefix = yes/languageprefix = yes/g' /etc/asterisk/asterisk.conf
+
+sed -i -e 's/^;defaultlanguage = en/defaultlanguage = fr/g' /etc/asterisk/asterisk.conf
+sed -i -e 's/^documentation_language = en_US/documentation_language = fr_FR/g' /etc/asterisk/asterisk.conf
