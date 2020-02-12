@@ -3,17 +3,21 @@
 declare -r prog="$0"
 usage() {
     cat <<USAGE
-	Usage: ${prog} -[option]
-	Option 1:   -f --full	Installation des modules Dahdi et Libpri.
-	Option 2:   -d --dahdi	Installation du module Dahdi seule.
-	Option 3:   -n --noint  Installation d'asterisk non intéractive.
-	Option 4:   -h --help   Aide
+	Usage: ${prog} -option [arg] 
+	Option 1:   -i     Types d'installation.
+	Option 2:   -h     Aide.
+	
+	Argument 1:	[full]		Installation de Dahdi et Libpri.
+	Argument 2:	[dahdi]		Installation de Dahdi.
+	
+	Argument 3:	[noint]		Installation d'asterisk non intéractive.
+					La configuration des utilisateurs ne sera pas demmandé.
 
-	Exemple 1:  ${prog}  -f		Installation de Dahdi et Libpri.	
-	Exemple 2:  ${prog}  -d		Installation de Dahdi.
-	Exemple 3:  ${prog}		Installation d'Asterisk sans les modules Dahdi et Libpri.
-	Exemple 4:  ${prog}  -n		Installation d'asterisk non intéractive.
-	Exemple 5:  ${prog}  -h		Affiche l'aide.	
+	Exemple 1:  ${prog}  -i full	
+	Exemple 2:  ${prog}  -i dahdi
+	Exemple 3:  ${prog}  -i noint
+	Exemple 4:  ${prog}		Installation d'Asterisk sans les modules Dahdi et Libpri.
+	Exemple 5:  ${prog}  -h		
 USAGE
 }
 usage
