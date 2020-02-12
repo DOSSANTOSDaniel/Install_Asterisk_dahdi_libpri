@@ -1,12 +1,40 @@
 #!/bin/bash
 
-# Lit une option et place cela dans la variable $option
-while getopts ":d :l :f" option
-do
-  case ${option} in
-    d ) echo "Install Dahdi";;
-    l ) echo "Install Libpri";;
-    f ) echo "Full Instal";;
-    \? ) echo "Error use: [-d] or [-l] or [-f]";;
+if (($# > 2))
+then
+  echo "trop d'arguments !"
+  exit 1
+fi
+ 
+while getopts ":i:h" opt; do
+  case $opt in
+    i)
+      case $OPTARG in
+	full)
+		echo "Install tout"
+	;;
+        dahdi)
+		echo "Install dahdi"
+	;;
+        noint)
+		echo "Install non interact"
+	;;
+	*)
+		echo "erreur d'arguments: $OPTARG"
+		exit 1
+	;;
+      esac 
+      ;;
+    h)
+      echo "-h aide aux commandes!" >&2
+      ;;
+    \?)
+      echo "Cette option est invalide: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
   esac
 done
