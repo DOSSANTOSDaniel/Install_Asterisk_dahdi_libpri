@@ -5,7 +5,8 @@ usage() {
     cat <<USAGE
 	Usage: ${prog} -option [arg] 
 	Option 1:   -i     Types d'installation.
-	Option 2:   -h     Aide.
+	Option 2:   -v     Version.
+	Option 3:   -h     Aide.
 	
 	Argument 1:	[full]		Installation de Dahdi et Libpri.
 	Argument 2:	[dahdi]		Installation de Dahdi.
@@ -13,11 +14,13 @@ usage() {
 	Argument 3:	[noint]		Installation d'asterisk non intéractive.
 					La configuration des utilisateurs ne sera pas demmandé.
 
-	Exemple 1:  ${prog}  -i full	
-	Exemple 2:  ${prog}  -i dahdi
-	Exemple 3:  ${prog}  -i noint
-	Exemple 4:  ${prog}		Installation d'Asterisk sans les modules Dahdi et Libpri.
-	Exemple 5:  ${prog}  -h		
+	Exemples:
+	${prog}  -i full	
+	${prog}  -i dahdi
+	${prog}  -i noint
+	${prog}			Installation d'Asterisk sans les modules Dahdi et Libpri.
+	${prog}  -v
+	${prog}  -h		
 USAGE
 }
 usage
