@@ -1,19 +1,17 @@
 #!/bin/bash
 #===============================================================================
 #
-#          FILE:  test.sh
+#          FILE:  GetAsterisk16.sh
 #
-#         USAGE:  ./test.sh
+#         USAGE:  ./GetAsterisk16.sh
 #
-#   DESCRIPTION:
+#   DESCRIPTION:  Script permettant d'installer Asterisk et ses modules et de configurer automatique les extensions.
 #
-#       OPTIONS:  -i full     
-#                 -i dahdi
-#                 -i noint
-#                 -h
-#                 -v
-#
-#
+#       OPTIONS:  -i full     Installation d'Asterisk et des modules Dahdi et Libpri.
+#                 -i dahdi    Installation d'Asterisk et du module Dahdi.
+#                 -i noint    Installation d'Asterisk automatique, sans intéraction.
+#                 -h          Affiche l'aide.
+#                 -v          Affiche la version.
 #
 #  REQUIREMENTS:  ---
 #          BUGS:  ---
