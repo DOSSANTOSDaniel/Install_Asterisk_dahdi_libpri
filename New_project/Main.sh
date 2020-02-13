@@ -1,40 +1,48 @@
 #!/bin/bash
 
-# TITRE: Installation d'Asterisk 16
-#================================================================#
-# DESCRIPTION:
-#  Ce script va nous permettre d'installer et de configurer
-#  Asterisk 16.
-#================================================================#
-# AUTEURS:
-#  Daniel DOS SANTOS < danielitto91@gmail.com >
-#================================================================#
-# USAGE: ./install_asterisk_V1.sh
-#================================================================#
-# NOTES:
-# 
-#================================================================#
+#===============================================================================
+#
+#          FILE:  GetAsterisk16.sh
+#         USAGE:  ./GetAsterisk_v1.sh
+#
+#   DESCRIPTION:  Script permettant d'installer Asterisk et ses modules.
+#		  Permet aussi de configurer automatique des comptes SIP.
+#
+#       OPTIONS:  -i full     Installation d'Asterisk et des modules Dahdi et Libpri.
+#                 -i dahdi    Installation d'Asterisk et du module Dahdi.
+#                 -i noint    Installation d'Asterisk automatique, sans intéraction.
+#                 -h          Affiche l'aide.
+#                 -v          Affiche la version.
+#
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  DOS SANTOS Daniel daniel.massy91@gmail.com
+#       VERSION:  1.0
+#       CREATED:  12/02/2020
+#===============================================================================
 
-### Variables ###
+### Déclaration de variables ###
 declare -r VerAst='asterisk-16.7.0'
 declare -r KeyGpgAst='0x5D984BE337191CE7'
-#Déclaration des variables de couleur
-declare -r Green='\e[1;32m'
-declare -r Orange='\e[0;33m'
-declare -r Neutral='\e[0;m'
-declare -r Blue='\e[1;34m'
-declare -r Red='\e[0;31m'
+
 #Récupération IP
 declare -r ip_check="$(hostname -i | awk '{print $1}')"
+
 #Téléchargements
 declare -r DownloadDahdi="https://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/releases/"
 declare -r DownloadLibpri="https://downloads.asterisk.org/pub/telephony/libpri/releases/"
 declare -r DownloadAsterisk="http://downloads.asterisk.org/pub/telephony/asterisk/releases/"
 
-### Fonctions ###
-function FailMes {
-  echo -e "\n ${Red} ### ${1} ### ${Neutral} \n"
+### Déclaration des fonctions ###
+message() {
+whiptail --title "$1" --msgbox "$2" 10 60
+  # placer les logs ici
 }
+
+
+
+
 
 function InfoMes {
   echo -e "\n ${Green} ### ${1} ### ${Neutral} \n"
