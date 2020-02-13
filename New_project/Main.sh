@@ -102,34 +102,32 @@ Finish() {
   rm -rf /usr/local/src/${VerLibpri}
   
   # Désinstallation d'applications
-  apt remove --purge
-  
+  apt remove whiptail --purge
 }
 
-function ExistInstall {
-	Inx="$(dpkg -s ${1} | grep Status | awk '{print $2}')"
-
-	if [ "${Inx}" == "install" ]
-	then
-		FailMes "Attention ${1} est déjà installé"
-    exit 9
-	else 
+ExistInstall() {
+  Inx="$(dpkg -s ${1} | grep Status | awk '{print $2}')"
+  if [ "${Inx}" == "install" ]
+  then
+    MesInfo $red "Attention ${1} est déjà installé"
+    exit 1
+  else 
     type -a "${1}"
     if [ "${?}" == "0" ]
-	  then
-		  FailMes "Attention ${1} est déjà installé"
-      exit 9
-	  else
+    then
+      MesInfo $red "Attention ${1} est déjà installé"
+      exit 1
+    else
       test -d "/usr/local/src/${VerAst}"
       if [ "${?}" == "0" ]
-	    then
-		    FailMes "Attention ${1} est déjà présent sur /usr/local/src/${VerAst}"
-        exit 9
-	    else
-		    InfoMes "Ok ${1} n'est pas installé sur cette machine !"
+      then
+        MesInfo $red "Attention ${1} est déjà présent sur /usr/local/src/"
+        exit 1
+      else
+        MesInfo $green "Ok ${1} n'est pas installé sur cette machine !"
       fi
-    fi    
-	fi
+    fi      
+  fi
 }
 
 function DownloadFile {
