@@ -7,7 +7,7 @@ tab[1]='toto,1001,pass'
 cat <<General
 ; Configuration des utilisateurs
 [general]
-userbase = 6000
+userbase = 1000
 hassip = yes
 callwaiting = yes
 threewaycalling = yes
@@ -22,11 +22,15 @@ pickupgroup = 1
 [temp](!)
 type = friend
 host = dynamic
+insecure=invite,port
+canreinvite=yes
+nat=yes
+qualify=yes
 dtmfmode = rfc2833
 disallow = all
 allow = ulaw
 allow = alaw
-context = travail
+context = users
 General > /etc/asterisk/users.conf
 
 cat <<Voice
@@ -39,11 +43,11 @@ minsecs = 4
 maxsilence = 2
 maxlogins = 3
 review = yes
-userscontext = travail
+userscontext = users
 saycid = yes
 sendvoicemail = yes
 
-[travail]
+[users]
 Voice > /etc/asterisk/voicemail.conf
 
 cat <<Ext
@@ -51,10 +55,25 @@ cat <<Ext
 static = yes
 writeprotect = yes
 clearglobalvars = yes
-userscontext = travail
+userscontext = users
 
-[travail]
-Ext > /etc/asterisk/extensions.conf
+[users]
+Ext > /etc/asterisk/extensions.conf*
+
+# nombres d'items dans le tableau
+declare -i NbItem=$(echo "${#tab[*]}")
+if [ ${NbItem} <= 9 ]
+then
+  NumExten='_100X'
+elif [ ${NbItem} > 9 && ${NbItem} <= 99 ]
+then
+  NumExten='_10XX'
+elif [ ${NbItem} > 99 && ${NbItem} <= 999 ]
+then
+  NumExten='_1XXX'
+else
+  echo "erreur extension"
+fi
 
 for i in "$tab[@]"
 do
@@ -76,15 +95,17 @@ cat<<Mail
 ${Exten} => ${Passwd}, ${Nom}
 Mail >> /etc/asterisk/voicemail.conf
 
-cat <<Ex
-exten =&gt; _600X,1,DIAL(SIP/${EXTEN},20)
-exten =&gt; _600X,2,Voicemail(${EXTEN}@travail)
+echo '
+exten => NumExten,1,DIAL(SIP/${EXTEN},20)
+exten => NumExten,2,Voicemail(${EXTEN}@users)
 ; Boîte vocale
-exten =&gt; 666,1,Answer()
-exten =&gt; 666,2, VoiceMailMain(${CALLERID(num)}@travail)
+exten => 666,1,Answer()
+exten => 666,2, VoiceMailMain(${CALLERID(num)}@travail)
 ; Test echo
-exten =&gt; 111, 1, answer
-exten =&gt; 111, 2, Playback(demo-echotest)
-exten =&gt; 111, 3, Echo()
-Ex >> /etc/asterisk/extensions.conf
+exten => 111, 1, answer
+exten => 111, 2, Playback(demo-echotest)
+exten => 111, 3, Echo()' >> /etc/asterisk/extensions.conf
+
+sed -i -e 's/NumExten/${NumExten}/g' /etc/asterisk/extensions.conf 
+
 done
