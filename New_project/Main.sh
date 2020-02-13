@@ -23,8 +23,15 @@
 #===============================================================================
 
 ### Déclaration de variables ###
+# Asterisk
 declare -r VerAst='asterisk-16.7.0'
 declare -r KeyGpgAst='0x5D984BE337191CE7'
+
+# DAHDI
+declare -r VerDahdi='dahdi-linux-complete-3.1.0+3.1.0'
+
+# Libpri
+declare -r VerLibpri='libpri-1.6.0'
 
 #Variables de couleur
 green='\e[1;32m'
@@ -41,31 +48,62 @@ declare -r DownloadLibpri="https://downloads.asterisk.org/pub/telephony/libpri/r
 declare -r DownloadAsterisk="http://downloads.asterisk.org/pub/telephony/asterisk/releases/"
 
 ### Déclaration des fonctions ###
-mesInfo() {
+#Fonction permettant d'afficher un message, usage: MesInfo [couleur] [message]
+MesInfo() {
 echo -e "\n $orange ------------------------------------------------------- $neutral \n"
-echo -e " $green           $1           $neutral "
+echo -e " $1           $2           $neutral "
 echo -e "\n $orange ------------------------------------------------------- $neutral \n"
-logger -t "${0}" "${1}"
-}
-meserror() {
-echo -e "\n $orange ------------------------------------------------------- $neutral \n"
-echo -e " $red           $1           $neutral "
-echo -e "\n $orange ------------------------------------------------------- $neutral \n"
-logger -t "${0}" "${1}"
-}
-
-
-
-function InfoMes {
-  echo -e "\n ${Green} ### ${1} ### ${Neutral} \n"
+logger -t "${0}" "${2}"
 }
 
 # Quand il y un exit, on efface les ressources que nous avons utilisées 
-function Finish {
-  for ErrExit in 'tar.gz.asc' 'sha256' 'tar.gz'
+Finish() {
+# Efface les traces de l'installation d'Asterisk
+  for Err in 'tar.gz.asc' 'sha256' 'tar.gz'
   do
-    rm -rf "/usr/local/src/${VerAst}.${ErrExit}"
+    rm -rf "/usr/local/src/${VerAst}.${Err}"
   done
+  cd /usr/local/src/${VerAst}
+  if $(make uninstall)
+  then
+    make uninstall-all
+  else
+    rm -rf /usr/local/src/${VerAst}
+  fi
+  
+# Efface les traces de l'installation de DAHDI 
+  for Err in 'sha1' 'tar.gz'
+  do
+    rm -rf "/usr/local/src/${VerDahdi}.${Err}"
+  done
+  cd /usr/local/src/${VerDahdi}
+  if $(make uninstall)
+  then
+    MesInfo $green 'Dahdi désinstalé!'
+  else
+    find / | grep dahdi > results
+    xargs rm -R < results
+  fi
+  rm -rf /usr/local/src/${VerDahdi}
+  
+# Efface les traces de l'installation de Libpri 
+  for Err in 'sha256' 'tar.gz'
+  do
+    rm -rf "/usr/local/src/${VerLibpri}.${Err}"
+  done
+  cd /usr/local/src/${VerLibpri}
+  if $(make uninstall)
+  then
+    MesInfo $green 'Libpri désinstalé!'
+  else
+    find / | grep libpri > results
+    xargs rm -R < results
+  fi
+  rm -rf /usr/local/src/${VerLibpri}
+  
+  # Désinstallation d'applications
+  apt remove --purge
+  
 }
 
 function ExistInstall {
