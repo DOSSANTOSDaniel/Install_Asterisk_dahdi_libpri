@@ -20,6 +20,7 @@ echo '
 [general]
 userbase = 1000
 hassip = yes
+hasvoicemail = yes
 callwaiting = yes
 threewaycalling = yes
 callwaitingcallerid = yes
