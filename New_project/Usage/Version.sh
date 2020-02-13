@@ -1,6 +1,10 @@
 #!/bin/bash
 version() {
-  echo 'Version du Script: $0 : [1.0]'
+cat <<Ver
+  
+	Script: ${0} Version: [1.0]
+
+Ver
 }
 
 version
