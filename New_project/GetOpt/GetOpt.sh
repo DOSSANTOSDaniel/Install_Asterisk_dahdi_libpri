@@ -6,7 +6,7 @@ then
   exit 1
 fi
  
-while getopts ":i:h" opt; do
+while getopts ":i:h :v" opt; do
   case $opt in
     i)
       case $OPTARG in
@@ -27,6 +27,9 @@ while getopts ":i:h" opt; do
       ;;
     h)
       echo "-h aide aux commandes!" >&2
+      ;;
+    v)
+      echo "-v version du script" >&2
       ;;
     \?)
       echo "Cette option est invalide: -$OPTARG" >&2
