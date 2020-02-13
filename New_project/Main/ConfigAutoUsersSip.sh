@@ -107,6 +107,7 @@ cat <<EOF >> /etc/asterisk/users.conf
 [${ExtenSip}](temp)
 fullname = ${Nom}
 username = ${Nom}
+mailbox = ${ExtenSip}
 secret = ${Passwd}
 cid_number = ${ExtenSip} 
 
