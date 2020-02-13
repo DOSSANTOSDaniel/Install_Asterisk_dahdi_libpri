@@ -1,10 +1,21 @@
 #!/bin/bash
+set -e
 declare -a tab
+tab[0]='daniel,passewd,1000'
+tab[1]='toto,pazzewd,1001'
+tab[2]='ana,passw,1002'
+tab[3]='todfdto,pazzewd,1003'
+tab[4]='todto,pazzewd,1004'
+tab[5]='todffto,pazzewd,1005'
+tab[6]='totsso,pazzewd,1006'
+tab[7]='todsto,pazzewd,1007'
+tab[8]='totdfo,pazzewd,1008'
+tab[9]='todfto,pazzewd,1009'
+tab[10]='toddfto,pazzewd,1010'
 
-tab[0]='daniel,1000,amour'
-tab[1]='toto,1001,pass'
+declare ini=0
 
-cat <<General
+echo '
 ; Configuration des utilisateurs
 [general]
 userbase = 1000
@@ -31,9 +42,9 @@ disallow = all
 allow = ulaw
 allow = alaw
 context = users
-General > /etc/asterisk/users.conf
+' > /etc/asterisk/users.conf
 
-cat <<Voice
+echo '
 ; Configuration de la boîte de messagerie
 [general]
 format = wav49|gsm|wav
@@ -48,64 +59,58 @@ saycid = yes
 sendvoicemail = yes
 
 [users]
-Voice > /etc/asterisk/voicemail.conf
+' > /etc/asterisk/voicemail.conf
 
-cat <<Ext
+echo '
 [general]
 static = yes
 writeprotect = yes
 clearglobalvars = yes
 userscontext = users
-
-[users]
-Ext > /etc/asterisk/extensions.conf*
+' > /etc/asterisk/extensions.conf
 
 # nombres d'items dans le tableau
 declare -i NbItem=$(echo "${#tab[*]}")
-if [ ${NbItem} <= 9 ]
+if (( ${NbItem} <= 9 ))
 then
   NumExten='_100X'
-elif [ ${NbItem} > 9 && ${NbItem} <= 99 ]
+elif (( ${NbItem} > 9 && ${NbItem} <= 99 ))
 then
   NumExten='_10XX'
-elif [ ${NbItem} > 99 && ${NbItem} <= 999 ]
+elif (( ${NbItem} > 99 && ${NbItem} <= 999 ))
 then
   NumExten='_1XXX'
 else
   echo "erreur extension"
 fi
-
-for i in "$tab[@]"
-do
-  local Nom="$(echo $tab[${i}] | awk -F, '{print $1}')"
-  local Exten="$(echo $tab[${i}] | awk -F, '{print $2}')"
-  local Passwd="$(echo $tab[${i}] | awk -F, '{print $3}')"
-
-cat<<Users
-
-[${Exten}](temp)
-fullname = ${Nom}
-username = ${Nom}
-secret = ${Passwd}
-cid_number = ${Exten}
-  
-Users >> /etc/asterisk/users.conf
-
-cat<<Mail
-${Exten} => ${Passwd}, ${Nom}
-Mail >> /etc/asterisk/voicemail.conf
-
 echo '
+[users]
 exten => NumExten,1,DIAL(SIP/${EXTEN},20)
 exten => NumExten,2,Voicemail(${EXTEN}@users)
 ; Boîte vocale
 exten => 666,1,Answer()
-exten => 666,2, VoiceMailMain(${CALLERID(num)}@travail)
+exten => 666,2, VoiceMailMain(${CALLERID(num)}@users)
 ; Test echo
 exten => 111, 1, answer
 exten => 111, 2, Playback(demo-echotest)
-exten => 111, 3, Echo()' >> /etc/asterisk/extensions.conf
+exten => 111, 3, Echo()
+' >> /etc/asterisk/extensions.conf
+sed -i -e "s/^exten => NumExten/exten => ${NumExten}/g" /etc/asterisk/extensions.conf
 
-sed -i -e 's/NumExten/${NumExten}/g' /etc/asterisk/extensions.conf 
+for ini in "${tab[@]}"
+do
+Nom=$(echo $ini | awk -F, '{print $1}')
+Passwd=$(echo $ini | awk -F, '{print $2}')
+ExtenSip=$(echo $ini | awk -F, '{print $3}')
+cat <<EOF >> /etc/asterisk/users.conf
+[${ExtenSip}](temp)
+fullname = ${Nom}
+username = ${Nom}
+secret = ${Passwd}
+cid_number = ${ExtenSip} 
 
+EOF
+cat <<EOF >> /etc/asterisk/voicemail.conf
+${ExtenSip} => ${Passwd}, ${Nom}
+EOF
 done
