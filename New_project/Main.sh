@@ -26,6 +26,12 @@
 declare -r VerAst='asterisk-16.7.0'
 declare -r KeyGpgAst='0x5D984BE337191CE7'
 
+#Variables de couleur
+green='\e[1;32m'
+orange='\e[0;33m'
+neutral='\e[0;m'
+red='\e[0;31m'
+
 #Récupération IP
 declare -r ip_check="$(hostname -i | awk '{print $1}')"
 
@@ -35,12 +41,18 @@ declare -r DownloadLibpri="https://downloads.asterisk.org/pub/telephony/libpri/r
 declare -r DownloadAsterisk="http://downloads.asterisk.org/pub/telephony/asterisk/releases/"
 
 ### Déclaration des fonctions ###
-message() {
-whiptail --title "$1" --msgbox "$2" 10 60
-  # placer les logs ici
+mesInfo() {
+echo -e "\n $orange ------------------------------------------------------- $neutral \n"
+echo -e " $green           $1           $neutral "
+echo -e "\n $orange ------------------------------------------------------- $neutral \n"
+logger -t "${0}" "${1}"
 }
-
-
+meserror() {
+echo -e "\n $orange ------------------------------------------------------- $neutral \n"
+echo -e " $red           $1           $neutral "
+echo -e "\n $orange ------------------------------------------------------- $neutral \n"
+logger -t "${0}" "${1}"
+}
 
 
 
