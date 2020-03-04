@@ -524,7 +524,7 @@ sleep 3
 ExistInstall 'asterisk'
 
 # vérifier utilisateur
-if [[ $USER != "root" ]]
+if [[ $User != "root" ]]
 then 
   echo 'Attention ce script doit être démarré en root' 
   exit 1
