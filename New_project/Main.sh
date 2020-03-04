@@ -29,8 +29,9 @@ set -e
 ### Déclaration de variables ###
 # Variables
 declare -r CountryCode="33"
-declare -r IpCheck="$(hostname -i | awk '{print $1}')"
-declare -r User=$(w | awk '{print $1}' | awk 'NR==3')
+declare -r IpNet="$(hostname -I)"
+User=$(w | awk '{print $1}' | awk 'NR==3')
+declare -r User
 declare -r Ver='1.0'
 declare -r Prog="$0"
 declare SipUsers
@@ -46,9 +47,9 @@ declare -r Green='\e[1;32m'
 declare -r Neutral='\e[0;m'
 declare -r Red='\e[0;31m'
 # Téléchargements
-declare -r DownloadDahdi="https://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/releases/"
-declare -r DownloadLibpri="https://downloads.asterisk.org/pub/telephony/libpri/releases/"
-declare -r DownloadAsterisk="http://downloads.asterisk.org/pub/telephony/asterisk/releases/"
+declare -r DownloadDahdi="https://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/releases"
+declare -r DownloadLibpri="https://downloads.asterisk.org/pub/telephony/libpri/releases"
+declare -r DownloadAsterisk="http://downloads.asterisk.org/pub/telephony/asterisk/releases"
 # Création des comptes SIP
 declare ini=0
 declare -a tab
@@ -57,7 +58,7 @@ declare -a tab
 ### Déclaration des fonctions ###
 usage() {
     cat <<USAGE
-	Usage: ${prog} -option [arg] 
+	Usage: ${Prog} -option [arg] 
 	Option 1:   -i     Types d'installation.
 	Option 2:   -v     Version.
 	Option 3:   -h     Aide.
@@ -72,18 +73,18 @@ usage() {
 	  Argument 6: [nast]    Installation d'asterisk seule.
 
 	Exemples:
-	${prog}  -i full	
-	${prog}  -i dahdi
-	${prog}  -i noint
-	${prog}  -v
-	${prog}  -h		
+	${Prog}  -i full	
+	${Prog}  -i dahdi
+	${Prog}  -i noint
+	${Prog}  -v
+	${Prog}  -h		
 USAGE
 }
 
 Version() {
 cat <<Ver
   
-	Script: ${0} Version: [${ver}]
+	Script: ${0} Version: [${Ver}]
 
 Ver
 }
@@ -107,7 +108,7 @@ do
         choix="${choix}+1"
     else
         whiptail --title "Creation des comptes SIP" --msgbox "Vous avez annulez" 10 60
-        unset ${tab[$imi]}
+        unset "${tab[$imi]}"
         continue
     fi
     Password=$(whiptail --title "Creation des comptes SIP" --passwordbox "Entrer le mot de passe utilisateur" 10 60 password 3>&1 1>&2 2>&3)
@@ -117,7 +118,7 @@ do
         choix="${choix}+1"
     else
         whiptail --title "Creation des comptes SIP" --msgbox "Vous avez annulez" 10 60
-        unset ${tab["$imi"]}
+        unset "${tab["$imi"]}"
         continue
     fi    
     if (whiptail --title "Creation des comptes SIP" --yesno "Verification: Nom:$Name / Extetion:$Exten / Password:$Password" 20 70 3>&1 1>&2 2>&3)
@@ -134,7 +135,7 @@ do
     else
       whiptail --title "Creation des comptes SIP" --msgbox "Ajout des comptes terminé, Demarrage de l'installation!" 10 60
       break
-      unset ${tab[${imi}]}
+      unset "${tab[${imi}]}"
     fi
   else
     whiptail --title "Asterisl Install" --msgbox "Demarrage de l'installation!" 10 60
@@ -163,7 +164,7 @@ Finish() {
     rm -rf "/usr/local/src/${VerAst}.${Err}"
   done
   cd /usr/local/src/${VerAst}
-  if $(make uninstall)
+  if make uninstall
   then
     make uninstall-all
   else
@@ -176,9 +177,9 @@ Finish() {
     rm -rf "/usr/local/src/${VerDahdi}.${Err}"
   done
   cd /usr/local/src/${VerDahdi}
-  if $(make uninstall)
+  if make uninstall
   then
-    MesInfo $green 'Dahdi désinstalé!'
+    MesInfo 'Dahdi désinstalé!'
   else
     find / | grep dahdi > results
     xargs rm -R < results
@@ -191,9 +192,9 @@ Finish() {
     rm -rf "/usr/local/src/${VerLibpri}.${Err}"
   done
   cd /usr/local/src/${VerLibpri}
-  if $(make uninstall)
+  if make uninstall
   then
-    MesInfo $green 'Libpri désinstalé!'
+    MesInfo 'Libpri désinstalé!'
   else
     find / | grep libpri > results
     xargs rm -R < results
@@ -206,21 +207,19 @@ Finish() {
 }
 
 ExistInstall() {
-	Inx="$(dpkg -s ${1} | grep Status | awk '{print $2}')"
+	Inx=$(dpkg -s "${1}" | grep Status | awk '{print $2}')
 
 	if [ "${Inx}" == "install" ]
 	then
 		FailMes "Attention ${1} est déjà installé"
     exit 9
 	else 
-    type -a "${1}"
-    if [ "${?}" == "0" ]
+    if [ type -a "${1}" == "0" ]
 	  then
 		  FailMes "Attention ${1} est déjà installé"
       exit 9
 	  else
-      test -d "/usr/local/src/${VerAst}"
-      if [ "${?}" == "0" ]
+      if [ test -d "/usr/local/src/${VerAst}" == "0" ]
 	    then
 		    FailMes "Attention ${1} est déjà présent sur /usr/local/src/${VerAst}"
         exit 9
@@ -236,8 +235,7 @@ InstallAst() {
 
   for FileEx in 'tar.gz.asc' 'sha256' 'tar.gz'
   do
-    wget -c -t 3 --progress=bar -O "/usr/local/src/${VerAst}.${FileEx}" "http://downloads.asterisk.org/pub/telephony/asterisk/releases/${VerAst}.${FileEx}" && sleep 1
-    if [ ${?} == 0 ]
+    if [ wget -c -t 3 --progress=bar -O "/usr/local/src/${VerAst}.${FileEx}" "${DownloadAsterisk}/${VerAst}.${FileEx}" && sleep 1 == "0" ]
     then
         InfoMes "Le téléchargement du fichier ${VerAst}.${FileEx} est terminé !"
     else
@@ -248,8 +246,8 @@ InstallAst() {
 
   InfoMes "Test sha256sum :"
   cd /usr/local/src/
-  sha256sum -c "/usr/local/src/${VerAst}.sha256"
-  if [ ${?} == 0 ]
+  
+  if [ sha256sum -c "/usr/local/src/${VerAst}.sha256" == "0" ]
   then
     InfoMes "vérification de la somme de contrôle SHA256 OK !"
   else
@@ -258,8 +256,7 @@ InstallAst() {
   fi
   InfoMes "Test GPG :"
   gpg2 --keyserver 'hkp://keyserver.ubuntu.com' --recv-keys "${KeyGpgAst}"
-  gpg2 --verify "/usr/local/src/${VerAst}.tar.gz.asc" "/usr/local/src/${VerAst}.tar.gz"
-  if [ ${?} == 0 ]
+  if [ gpg2 --verify "/usr/local/src/${VerAst}.tar.gz.asc" "/usr/local/src/${VerAst}.tar.gz" == "0" ]
   then
     InfoMes "vérification de la clé GPG OK !"
   else
@@ -267,8 +264,7 @@ InstallAst() {
     exit 2
   fi
 
-  tar xzvf "/usr/local/src/${VerAst}.tar.gz"
-  if [ ${?} == 0 ]
+  if [ tar xzvf "/usr/local/src/${VerAst}.tar.gz" == 0 ]
   then
     InfoMes "Décompression OK !"
   else
@@ -335,11 +331,10 @@ InstallAst() {
 }
 
 InstallDahdi() {
-  apt-get install linux-headers-$(uname -r)
+  apt-get install linux-headers-"$(uname -r)"
   for FileEx in 'tar.gz.sha1' 'tar.gz'
   do
-    wget -c -t 3 --progress=bar -O "/usr/local/src/${VerDahdi}.${FileEx}" "https://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/releases/${VerDahdi}.${FileEx}" && sleep 1
-    if [ ${?} == 0 ]
+    if [ wget -c -t 3 --progress=bar -O "/usr/local/src/${VerDahdi}.${FileEx}" "${DownloadDahdi}/${VerDahdi}.${FileEx}" && sleep 1 == "0" ]
     then
         InfoMes "Le téléchargement du fichier ${VerDahdi}.${FileEx} est terminé !"
     else
@@ -350,8 +345,7 @@ InstallDahdi() {
 
   InfoMes "Test sha1 :"
   cd /usr/local/src/
-  sha1sum -c ${VerDahdi}.tar.gz.sha1
-  if [ ${?} == 0 ]
+  if [ sha1sum -c ${VerDahdi}.tar.gz.sha1 == "0" ]
   then
     InfoMes "vérification de la somme de contrôle SHA1 OK !"
   else
@@ -359,8 +353,7 @@ InstallDahdi() {
     exit 1
   fi
   
-  tar xzvf "/usr/local/src/${VerDahdi}.tar.gz"
-  if [ ${?} == 0 ]
+  if [ tar xzvf "/usr/local/src/${VerDahdi}.tar.gz" == "0" ]
   then
     InfoMes "Décompression OK !"
   else
@@ -381,8 +374,7 @@ InstallDahdi() {
 InstallLibpri() {
   for FileEx in 'sha256' 'tar.gz'
   do
-    wget -c -t 3 --progress=bar -O "/usr/local/src/${VerLibpri}.${FileEx}" "https://downloads.asterisk.org/pub/telephony/libpri/releases/${VerLibpri}.${FileEx}" && sleep 1
-    if [ ${?} == 0 ]
+    if [ wget -c -t 3 --progress=bar -O "/usr/local/src/${VerLibpri}.${FileEx}" "${DownloadLibpri}/${VerLibpri}.${FileEx}" && sleep 1 == 0 ]
     then
         InfoMes "Le téléchargement du fichier ${VerLibpri}.${FileEx} est terminé !"
     else
@@ -393,8 +385,7 @@ InstallLibpri() {
 
   InfoMes "Test sha256 :"
   cd /usr/local/src/
-  sha1sum -c ${VerLibpri}.sha256
-  if [ ${?} == 0 ]
+  if [ sha1sum -c ${VerLibpri}.sha256 == "0" ]
   then
     InfoMes "vérification de la somme de contrôle SHA256 OK !"
   else
@@ -402,8 +393,7 @@ InstallLibpri() {
     exit 1
   fi
   
-  tar xzvf "/usr/local/src/${VerLibpri}.tar.gz"
-  if [ ${?} == 0 ]
+  if [ tar xzvf "/usr/local/src/${VerLibpri}.tar.gz" == "0" ]
   then
     InfoMes "Décompression OK !"
   else
@@ -473,14 +463,15 @@ userscontext = users
 ' > /etc/asterisk/extensions.conf
 
 # Nombres d'items dans le tableau
-declare -i NbItem=$(echo "${#tab[*]}")
-if (( ${NbItem} <= 9 ))
+NbItem=$("${#tab[*]}")
+declare -i NbItem
+if (( NbItem <= 9 ))
 then
   NumExten='_100X'
-elif (( ${NbItem} > 9 && ${NbItem} <= 99 ))
+elif (( NbItem > 9 && NbItem <= 99 ))
 then
   NumExten='_10XX'
-elif (( ${NbItem} > 99 && ${NbItem} <= 999 ))
+elif (( NbItem > 99 && NbItem <= 999 ))
 then
   NumExten='_1XXX'
 else
@@ -503,10 +494,10 @@ sed -i -e "s/^exten => NumExten/exten => ${NumExten}/g" /etc/asterisk/extensions
 
 for ini in "${tab[@]}"
 do
-  Nom=$(echo $ini | awk -F, '{print $1}')
-  Passwd=$(echo $ini | awk -F, '{print $2}')
-  ExtenSip=$(echo $ini | awk -F, '{print $3}')
-  cat <<EOF >> /etc/asterisk/users.conf
+  Nom=$(echo "$ini" | awk -F, '{print $1}')
+  Passwd=$(echo "$ini" | awk -F, '{print $2}')
+  ExtenSip=$(echo "$ini" | awk -F, '{print $3}')
+  cat << EOF >> /etc/asterisk/users.conf
   [${ExtenSip}](temp)
   fullname = ${Nom}
   username = ${Nom}
@@ -514,19 +505,19 @@ do
   secret = ${Passwd}
   cid_number = ${ExtenSip} 
 
-  EOF
-  cat <<EOF >> /etc/asterisk/voicemail.conf
+EOF
+  cat << EOF >> /etc/asterisk/voicemail.conf
   ${ExtenSip} => ${Passwd}, ${Nom}
-  EOF
+EOF
 done
 }
 
 ### Code ###
 clear
 
-echo -e "\n ${Orange} ####################################################### ${Neutral} \n"
-echo -e " ${Blue}     Installation et configuration d'Asterisk 16        ${Neutral} "
-echo -e "\n ${Orange} ####################################################### ${Neutral} \n"
+echo -e "\n ${Red} ####################################################### ${Neutral} \n"
+echo -e " ${Green}     Installation et configuration d'Asterisk 16        ${Neutral} "
+echo -e "\n ${Red} ####################################################### ${Neutral} \n"
 sleep 3
 
 ExistInstall 'asterisk'
@@ -644,7 +635,7 @@ echo "
 [DEFAULT]
 destemail = root@gmail.com
 sender = root@example.lan
-ignoreip = 127.0.0.1/8 $ipnet $ipwifi
+ignoreip = 127.0.0.1/8 $IpNet
 [sshd]
 enabled = true
 port = 22
