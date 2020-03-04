@@ -540,14 +540,16 @@ then
 fi 
 
 # Récupération des options utilisateur
-if (( $# > 2 ))
+if [ $# -gt "2" ]
 then
   echo "trop d'arguments !"
   exit 1
+elif [[ $# -lt "1" ]]
+then
+  echo "Il faut une option et un argument "
 elif [[ $1 =~ ^[^-.] ]]
 then
   echo "$1 n'est pas une option! "
-elif [[  ]]
 fi
  
 while getopts ":i: :h :v" opt
