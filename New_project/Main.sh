@@ -7,9 +7,12 @@
 #   DESCRIPTION:  Script permettant d'installer Asterisk et ses modules.
 #		  Permet aussi de configurer automatique des comptes SIP.
 #
-#       OPTIONS:  -i full     Installation d'Asterisk et des modules Dahdi et Libpri.
+#       OPTIONS:  -i full     Installation d'Asterisk et les modules Dahdi et Libpri.
 #                 -i dahdi    Installation d'Asterisk et du module Dahdi.
-#                 -i noint    Installation d'Asterisk automatique, sans intéraction.
+#                 -i ast      Installation d'Asterisk.
+#                 -i nfull    Installation d'Asterisk et les modules Dahdi et Libpri sans comptes SIP.
+#                 -i ndahdi   Installation d'Asterisk et du module Dahdi sans comptes SIP.
+#                 -i nast     Installation d'Asterisk sans comptes SIP.
 #                 -h          Affiche l'aide.
 #                 -v          Affiche la version.
 #
@@ -46,6 +49,10 @@ declare -r Red='\e[0;31m'
 declare -r DownloadDahdi="https://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/releases/"
 declare -r DownloadLibpri="https://downloads.asterisk.org/pub/telephony/libpri/releases/"
 declare -r DownloadAsterisk="http://downloads.asterisk.org/pub/telephony/asterisk/releases/"
+# Création des comptes SIP
+declare ini=0
+declare -a tab
+
 
 ### Déclaration des fonctions ###
 usage() {
@@ -55,17 +62,19 @@ usage() {
 	Option 2:   -v     Version.
 	Option 3:   -h     Aide.
 	
-	Argument 1:	[full]		Installation de Dahdi et Libpri.
-	Argument 2:	[dahdi]		Installation de Dahdi.
-	
-	Argument 3:	[noint]		Installation d'asterisk non intéractive.
-					La configuration des utilisateurs ne sera pas demmandé.
+	  Argument 1:	[full]		Installation d'Asterisk, Dahdi et Libpri.
+	  Argument 2:	[dahdi]		Installation d'Asterisk et du module Dahdi.
+	  Argument 3: [ast]     Installation d'Asterisk seule.
+
+    La configuration des comptes SIP ne sera pas faite!
+	  Argument 4:	[nfull]		Installation d'Asterisk, Dahdi et Libpri.
+	  Argument 5:	[ndahdi]	Installation d'asterisk et du module Dahdi.
+	  Argument 6: [nast]    Installation d'asterisk seule.
 
 	Exemples:
 	${prog}  -i full	
 	${prog}  -i dahdi
 	${prog}  -i noint
-	${prog}			Installation d'Asterisk sans les modules Dahdi et Libpri.
 	${prog}  -v
 	${prog}  -h		
 USAGE
@@ -407,6 +416,111 @@ InstallLibpri() {
   make install
 }
 
+UserSip() {
+  echo '
+; Configuration des utilisateurs
+[general]
+userbase = 1000
+hassip = yes
+hasvoicemail = yes
+callwaiting = yes
+threewaycalling = yes
+callwaitingcallerid = yes
+transfer = yes
+canpark = yes
+cancallforward = yes
+callreturn = yes
+callgroup = 1
+pickupgroup = 1
+
+[temp](!)
+type = friend
+host = dynamic
+insecure=invite,port
+canreinvite=yes
+nat=yes
+qualify=yes
+dtmfmode = rfc2833
+disallow = all
+allow = ulaw
+allow = alaw
+context = users
+' > /etc/asterisk/users.conf
+
+echo '
+; Configuration de la boîte de messagerie
+[general]
+format = wav49|gsm|wav
+maxmsg = 100
+maxsecs = 60
+minsecs = 4
+maxsilence = 2
+maxlogins = 3
+review = yes
+userscontext = users
+saycid = yes
+sendvoicemail = yes
+
+[users]
+' > /etc/asterisk/voicemail.conf
+
+echo '
+[general]
+static = yes
+writeprotect = yes
+clearglobalvars = yes
+userscontext = users
+' > /etc/asterisk/extensions.conf
+
+# Nombres d'items dans le tableau
+declare -i NbItem=$(echo "${#tab[*]}")
+if (( ${NbItem} <= 9 ))
+then
+  NumExten='_100X'
+elif (( ${NbItem} > 9 && ${NbItem} <= 99 ))
+then
+  NumExten='_10XX'
+elif (( ${NbItem} > 99 && ${NbItem} <= 999 ))
+then
+  NumExten='_1XXX'
+else
+  echo "erreur extension"
+fi
+
+echo '
+[users]
+exten => NumExten,1,DIAL(SIP/${EXTEN},20)
+exten => NumExten,2,Voicemail(${EXTEN}@users)
+; Boîte vocale
+exten => 666,1,Answer()
+exten => 666,2, VoiceMailMain(${CALLERID(num)}@users)
+; Test echo
+exten => 111, 1, answer
+exten => 111, 2, Playback(demo-echotest)
+exten => 111, 3, Echo()
+' >> /etc/asterisk/extensions.conf
+sed -i -e "s/^exten => NumExten/exten => ${NumExten}/g" /etc/asterisk/extensions.conf
+
+for ini in "${tab[@]}"
+do
+  Nom=$(echo $ini | awk -F, '{print $1}')
+  Passwd=$(echo $ini | awk -F, '{print $2}')
+  ExtenSip=$(echo $ini | awk -F, '{print $3}')
+  cat <<EOF >> /etc/asterisk/users.conf
+  [${ExtenSip}](temp)
+  fullname = ${Nom}
+  username = ${Nom}
+  mailbox = ${ExtenSip}
+  secret = ${Passwd}
+  cid_number = ${ExtenSip} 
+
+  EOF
+  cat <<EOF >> /etc/asterisk/voicemail.conf
+  ${ExtenSip} => ${Passwd}, ${Nom}
+  EOF
+done
+}
+
 ### Code ###
 clear
 
@@ -454,43 +568,43 @@ do
   case $opt in
     i)
       case $OPTARG in
-	full)
-		echo "Installation d'Asterisk 16, Dadhi et Libpri"
-    Interface
-    InstallAst
-    InstallDahdi
-    InstallLibpri
-	;;
+	      full)
+		      echo "Installation d'Asterisk 16, Dadhi et Libpri"
+          Interface
+          InstallAst
+          InstallDahdi
+          InstallLibpri
+	        ;;
         dahdi)
-		echo "Installation d'Asterisk 16 et Dadhi"
-    Interface
-    InstallAst
-    InstallDahdi   
-	;;
+		      echo "Installation d'Asterisk 16 et Dadhi"
+          Interface
+          InstallAst
+          InstallDahdi   
+	        ;;
         ast)
-		echo "Installation d'Asterisk 16"
-    Interface
-    InstallAst
-  ;;
+		      echo "Installation d'Asterisk 16"
+          Interface
+          InstallAst
+          ;;
         nfull)
-		echo "Installation d'Asterisk 16, Dadhi et Libpri sans comptes Sip"
-    InstallAst
-    InstallDahdi
-    InstallLibpri          
-	;;
+		      echo "Installation d'Asterisk 16, Dadhi et Libpri sans comptes Sip"
+          InstallAst
+          InstallDahdi
+          InstallLibpri          
+	        ;;
         ndahdi)
-		echo "Installation d'Asterisk 16 et Dadhi sans comptes Sip"
-    InstallAst
-    InstallDahdi          
-	;;
+		      echo "Installation d'Asterisk 16 et Dadhi sans comptes Sip"
+          InstallAst
+          InstallDahdi          
+	        ;;
         nast)
-		echo "Installation d'Asterisk 16 sans comptes Sip"
-    InstallAst                   
-	;;
-	*)
-		echo "erreur d'arguments: $OPTARG"
-		exit 1
-	;;
+		      echo "Installation d'Asterisk 16 sans comptes Sip"
+          InstallAst                   
+	        ;;
+	      *)
+		      echo "erreur d'arguments: $OPTARG"
+		      exit 1
+	        ;;
       esac 
       ;;
     h)
@@ -545,8 +659,6 @@ enabled = true
 " > /etc/fail2ban/jail.d/defaults-debian.conf
 sleep 1
 systemctl restart fail2ban
-
-#####################################################################################################################
 
 # Effacer les traces
 trap Finish EXIT
