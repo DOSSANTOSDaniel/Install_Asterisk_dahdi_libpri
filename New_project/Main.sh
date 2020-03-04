@@ -29,7 +29,8 @@ set -e
 ### Déclaration de variables ###
 # Variables
 declare -r CountryCode="33"
-declare -r IpNet="$(hostname -I)"
+IpNet="$(hostname -I)"
+declare -r IpNet
 User=$(w | awk '{print $1}' | awk 'NR==3')
 declare -r User
 declare -r Ver='1.0'
@@ -142,7 +143,7 @@ do
     break
   fi
 done
-SipUsers=$(echo "${tab[@]}")
+SipUsers=$("${tab[@]}")
 }
 
 # Fonction permettant d'afficher un message
@@ -214,12 +215,12 @@ ExistInstall() {
 		FailMes "Attention ${1} est déjà installé"
     exit 9
 	else 
-    if [ type -a "${1}" == "0" ]
+    if [[ $(type -a "${1}") == "0" ]]
 	  then
 		  FailMes "Attention ${1} est déjà installé"
       exit 9
 	  else
-      if [ test -d "/usr/local/src/${VerAst}" == "0" ]
+      if [[ $(test -d "/usr/local/src/${VerAst}") == "0" ]]
 	    then
 		    FailMes "Attention ${1} est déjà présent sur /usr/local/src/${VerAst}"
         exit 9
@@ -235,7 +236,7 @@ InstallAst() {
 
   for FileEx in 'tar.gz.asc' 'sha256' 'tar.gz'
   do
-    if [ wget -c -t 3 --progress=bar -O "/usr/local/src/${VerAst}.${FileEx}" "${DownloadAsterisk}/${VerAst}.${FileEx}" && sleep 1 == "0" ]
+    if [[ $(wget -c -t 3 --progress=bar -O "/usr/local/src/${VerAst}.${FileEx}" "${DownloadAsterisk}/${VerAst}.${FileEx}" && sleep 1) == "0" ]]
     then
         InfoMes "Le téléchargement du fichier ${VerAst}.${FileEx} est terminé !"
     else
@@ -247,7 +248,7 @@ InstallAst() {
   InfoMes "Test sha256sum :"
   cd /usr/local/src/
   
-  if [ sha256sum -c "/usr/local/src/${VerAst}.sha256" == "0" ]
+  if [[ $(sha256sum -c "/usr/local/src/${VerAst}.sha256") == "0" ]]
   then
     InfoMes "vérification de la somme de contrôle SHA256 OK !"
   else
@@ -256,7 +257,7 @@ InstallAst() {
   fi
   InfoMes "Test GPG :"
   gpg2 --keyserver 'hkp://keyserver.ubuntu.com' --recv-keys "${KeyGpgAst}"
-  if [ gpg2 --verify "/usr/local/src/${VerAst}.tar.gz.asc" "/usr/local/src/${VerAst}.tar.gz" == "0" ]
+  if [[ $(gpg2 --verify "/usr/local/src/${VerAst}.tar.gz.asc" "/usr/local/src/${VerAst}.tar.gz") == "0" ]]
   then
     InfoMes "vérification de la clé GPG OK !"
   else
@@ -264,7 +265,7 @@ InstallAst() {
     exit 2
   fi
 
-  if [ tar xzvf "/usr/local/src/${VerAst}.tar.gz" == 0 ]
+  if [[ $(tar xzvf "/usr/local/src/${VerAst}.tar.gz") == "0" ]]
   then
     InfoMes "Décompression OK !"
   else
@@ -334,7 +335,7 @@ InstallDahdi() {
   apt-get install linux-headers-"$(uname -r)"
   for FileEx in 'tar.gz.sha1' 'tar.gz'
   do
-    if [ wget -c -t 3 --progress=bar -O "/usr/local/src/${VerDahdi}.${FileEx}" "${DownloadDahdi}/${VerDahdi}.${FileEx}" && sleep 1 == "0" ]
+    if [[ $(wget -c -t 3 --progress=bar -O "/usr/local/src/${VerDahdi}.${FileEx}" "${DownloadDahdi}/${VerDahdi}.${FileEx}" && sleep 1) == "0" ]]
     then
         InfoMes "Le téléchargement du fichier ${VerDahdi}.${FileEx} est terminé !"
     else
@@ -345,7 +346,7 @@ InstallDahdi() {
 
   InfoMes "Test sha1 :"
   cd /usr/local/src/
-  if [ sha1sum -c ${VerDahdi}.tar.gz.sha1 == "0" ]
+  if [[ $(sha1sum -c ${VerDahdi}.tar.gz.sha1) == "0" ]]
   then
     InfoMes "vérification de la somme de contrôle SHA1 OK !"
   else
@@ -353,7 +354,7 @@ InstallDahdi() {
     exit 1
   fi
   
-  if [ tar xzvf "/usr/local/src/${VerDahdi}.tar.gz" == "0" ]
+  if [[ $(tar xzvf "/usr/local/src/${VerDahdi}.tar.gz") == "0" ]]
   then
     InfoMes "Décompression OK !"
   else
@@ -374,7 +375,7 @@ InstallDahdi() {
 InstallLibpri() {
   for FileEx in 'sha256' 'tar.gz'
   do
-    if [ wget -c -t 3 --progress=bar -O "/usr/local/src/${VerLibpri}.${FileEx}" "${DownloadLibpri}/${VerLibpri}.${FileEx}" && sleep 1 == 0 ]
+    if [[ $(wget -c -t 3 --progress=bar -O "/usr/local/src/${VerLibpri}.${FileEx}" "${DownloadLibpri}/${VerLibpri}.${FileEx}" && sleep 1) == "0" ]]
     then
         InfoMes "Le téléchargement du fichier ${VerLibpri}.${FileEx} est terminé !"
     else
@@ -385,7 +386,7 @@ InstallLibpri() {
 
   InfoMes "Test sha256 :"
   cd /usr/local/src/
-  if [ sha1sum -c ${VerLibpri}.sha256 == "0" ]
+  if [[ $(sha1sum -c ${VerLibpri}.sha256) == "0" ]]
   then
     InfoMes "vérification de la somme de contrôle SHA256 OK !"
   else
@@ -393,7 +394,7 @@ InstallLibpri() {
     exit 1
   fi
   
-  if [ tar xzvf "/usr/local/src/${VerLibpri}.tar.gz" == "0" ]
+  if [[ $(tar xzvf "/usr/local/src/${VerLibpri}.tar.gz") == "0" ]]
   then
     InfoMes "Décompression OK !"
   else
