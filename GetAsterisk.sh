@@ -35,7 +35,6 @@ User=$(w | awk '{print $1}' | awk 'NR==3')
 declare -r User
 declare -r Ver='1.0'
 declare -r Prog="$0"
-declare SipUsers
 # Asterisk
 declare -r VerAst='asterisk-16.7.0'
 declare -r KeyGpgAst='0x5D984BE337191CE7'
@@ -93,7 +92,6 @@ Ver
 Interface() {
 declare -i imi=0
 declare -i choix=0
-declare -i exitstatus=0
 declare -a tab
 declare -i Exten=1000
 
@@ -102,9 +100,7 @@ do
   if (whiptail --title "Boite de dialogue Oui / Non" --yesno "Voulez-vous ajouter des utilisateurs ?" 10 60)
   then
     Name=$(whiptail --title "Creation des comptes SIP" --inputbox "Entrer le nom utilisateur" 10 60 Daniel 3>&1 1>&2 2>&3)
-    exitstatus="${?}"
-  
-    if [ "${exitstatus}" = 0 ]
+    if [ "${?}" == "0" ]
     then
         choix="${choix}+1"
     else
@@ -113,8 +109,7 @@ do
         continue
     fi
     Password=$(whiptail --title "Creation des comptes SIP" --passwordbox "Entrer le mot de passe utilisateur" 10 60 password 3>&1 1>&2 2>&3)
-    exitstatus="${?}"
-    if [ "${exitstatus}" = 0 ]
+    if [ "${?}" == "0" ]
     then
         choix="${choix}+1"
     else
@@ -143,7 +138,6 @@ do
     break
   fi
 done
-SipUsers=$("${tab[@]}")
 }
 
 # Fonction permettant d'afficher un message
@@ -524,7 +518,7 @@ sleep 3
 ExistInstall 'asterisk'
 
 # vérifier utilisateur
-if [[ $User != "root" ]]
+if [[ "${User}" != "root" ]]
 then 
   echo 'Attention ce script doit être démarré en root' 
   exit 1
