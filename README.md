@@ -1,8 +1,8 @@
 # Script d'installation d'Asterisque, DAHDI et Libpri
 
-* USAGE:  ./GetAsterisk.sh -option [arg]
+USAGE:  ./GetAsterisk.sh -option [arg]
 
-* DESCRIPTION:
+DESCRIPTION:
 - Script permettant d'installer Asterisk et ses modules.
 - Permet aussi de configurer automatiquement les comptes SIP.
 
