@@ -31,8 +31,6 @@ set -e
 declare -r CountryCode="33"
 IpNet="$(hostname -I)"
 declare -r IpNet
-User=$(w | awk '{print $1}' | awk 'NR==3')
-declare -r User
 declare -r Ver='1.0'
 declare -r Prog="$0"
 # Asterisk
@@ -518,7 +516,7 @@ sleep 3
 ExistInstall 'asterisk'
 
 # vérifier utilisateur
-if [[ "${User}" != "root" ]]
+if [[ "$(id -u)" != "root" ]]
 then 
   echo 'Attention ce script doit être démarré en root' 
   exit 1
