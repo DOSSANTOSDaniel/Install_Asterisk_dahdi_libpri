@@ -505,6 +505,23 @@ EOF
 done
 }
 
+AppInstall() {
+  # Installations d'applications
+  apt update && apt full-upgrade -y
+  apt install wget -y
+  apt install gpg -y
+  apt install vim -y
+  apt install dialog -y
+  apt install apt-utils -y
+  apt install systemd -y
+  apt install whiptail -y
+  apt install sudo -y
+  apt install ufw -y
+  apt install fail2ban -y
+  apt install molly-guard -y
+  apt install rkhunter -y
+}
+
 ### Code ###
 clear
 
@@ -522,21 +539,6 @@ then
   exit 1
 fi 
 
-# Installations d'applications
-apt update && apt full-upgrade -y
-apt install wget -y
-apt install gpg -y
-apt install vim -y
-apt install dialog -y
-apt install apt-utils -y
-apt install systemd -y
-apt install whiptail -y
-apt install sudo -y
-apt install ufw -y
-apt install fail2ban -y
-apt install molly-guard -y
-apt install rkhunter -y
-
 # Récupération des options utilisateur
 if (( $# > 2 ))
 then
@@ -545,6 +547,7 @@ then
 elif [[ $1 =~ ^[^-.] ]]
 then
   echo "$1 n'est pas une option! "
+elif [[  ]]
 fi
  
 while getopts ":i: :h :v" opt
@@ -554,6 +557,7 @@ do
       case $OPTARG in
 	      full)
 		      echo "Installation d'Asterisk 16, Dadhi et Libpri"
+          AppInstall
           Interface
           InstallAst
           InstallDahdi
@@ -561,28 +565,33 @@ do
 	        ;;
         dahdi)
 		      echo "Installation d'Asterisk 16 et Dadhi"
+          AppInstall
           Interface
           InstallAst
           InstallDahdi   
 	        ;;
         ast)
 		      echo "Installation d'Asterisk 16"
+          AppInstall
           Interface
           InstallAst
           ;;
         nfull)
 		      echo "Installation d'Asterisk 16, Dadhi et Libpri sans comptes Sip"
+          AppInstall
           InstallAst
           InstallDahdi
           InstallLibpri          
 	        ;;
         ndahdi)
 		      echo "Installation d'Asterisk 16 et Dadhi sans comptes Sip"
+          AppInstall
           InstallAst
           InstallDahdi          
 	        ;;
         nast)
 		      echo "Installation d'Asterisk 16 sans comptes Sip"
+          AppInstall
           InstallAst                   
 	        ;;
 	      *)
@@ -610,7 +619,7 @@ done
 
 ### Sécurisation ###
 # ajout de l'utilisateur loggé au groupe sudo
-usermod -aG sudo "$User"
+usermod -aG sudo "$(logname)"
 
 # configuration de ufw 
 ufw status
