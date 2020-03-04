@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #===============================================================================
-#          FILE:  GetAsterisk16.sh
-#         USAGE:  ./GetAsterisk_v1.sh
+#          FILE:  GetAsterisk.sh
+#         USAGE:  ./GetAsterisk.sh -option [arg]
 #
 #   DESCRIPTION:  Script permettant d'installer Asterisk et ses modules.
 #		  Permet aussi de configurer automatique des comptes SIP.
