@@ -71,7 +71,7 @@ usage() {
 USAGE
 }
 
-version() {
+Version() {
 cat <<Ver
   
 	Script: ${0} Version: [${ver}]
@@ -407,14 +407,6 @@ InstallLibpri() {
   make install
 }
 
-FailMes() {
-  echo -e "\n ${Red} ### ${1} ### ${Neutral} \n"
-}
-
-InfoMes() {
-  echo -e "\n ${Green} ### ${1} ### ${Neutral} \n"
-}
-
 ### Code ###
 clear
 
@@ -454,7 +446,7 @@ then
   exit 1
 elif [[ $1 =~ ^[^-.] ]]
 then
-  echo "$1 n'est pas un option! "
+  echo "$1 n'est pas une option! "
 fi
  
 while getopts ":i: :h :v" opt
@@ -463,13 +455,37 @@ do
     i)
       case $OPTARG in
 	full)
-		echo "Install tout"
+		echo "Installation d'Asterisk 16, Dadhi et Libpri"
+    Interface
+    InstallAst
+    InstallDahdi
+    InstallLibpri
 	;;
         dahdi)
-		echo "Install dahdi"
+		echo "Installation d'Asterisk 16 et Dadhi"
+    Interface
+    InstallAst
+    InstallDahdi   
 	;;
-        noint)
-		echo "Install non interact"
+        ast)
+		echo "Installation d'Asterisk 16"
+    Interface
+    InstallAst
+  ;;
+        nfull)
+		echo "Installation d'Asterisk 16, Dadhi et Libpri sans comptes Sip"
+    InstallAst
+    InstallDahdi
+    InstallLibpri          
+	;;
+        ndahdi)
+		echo "Installation d'Asterisk 16 et Dadhi sans comptes Sip"
+    InstallAst
+    InstallDahdi          
+	;;
+        nast)
+		echo "Installation d'Asterisk 16 sans comptes Sip"
+    InstallAst                   
 	;;
 	*)
 		echo "erreur d'arguments: $OPTARG"
@@ -478,10 +494,10 @@ do
       esac 
       ;;
     h)
-      echo "-h aide aux commandes!" >&2
+      Usage
       ;;
     v)
-      echo "-v version du script" >&2
+      Version
       ;;
     \?)
       echo "Cette option est invalide: $OPTARG" >&2
