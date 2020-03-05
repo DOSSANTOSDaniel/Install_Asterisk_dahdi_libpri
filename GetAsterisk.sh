@@ -77,6 +77,7 @@ Usage() {
 	${Prog}  -v
 	${Prog}  -h		
 USAGE
+exit 1
 }
 
 Version() {
@@ -85,6 +86,7 @@ cat <<Ver
 	Script: ${0} Version: [${Ver}]
 
 Ver
+exit 1
 }
 
 Interface() {
@@ -528,7 +530,6 @@ clear
 echo -e "\n ${Red} ####################################################### ${Neutral} \n"
 echo -e " ${Green}     Installation et configuration d'Asterisk 16        ${Neutral} "
 echo -e "\n ${Red} ####################################################### ${Neutral} \n"
-sleep 3
 
 ExistInstall 'asterisk'
 
