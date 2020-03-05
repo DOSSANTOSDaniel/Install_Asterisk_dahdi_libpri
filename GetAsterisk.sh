@@ -61,14 +61,14 @@ Usage() {
 	Option 2:   -v     Version.
 	Option 3:   -h     Aide.
 	
-	  Argument 1:	[full]		Installation d'Asterisk, Dahdi et Libpri.
-	  Argument 2:	[dahdi]		Installation d'Asterisk et du module Dahdi.
-	  Argument 3: [ast]     Installation d'Asterisk seule.
+	  Argument 1: [full]  Installation d'Asterisk, Dahdi et Libpri.
+	  Argument 2: [dahdi] Installation d'Asterisk et du module Dahdi.
+	  Argument 3: [ast] Installation d'Asterisk seule.
 
     La configuration des comptes SIP ne sera pas faite!
-	  Argument 4:	[nfull]		Installation d'Asterisk, Dahdi et Libpri.
-	  Argument 5:	[ndahdi]	Installation d'asterisk et du module Dahdi.
-	  Argument 6: [nast]    Installation d'asterisk seule.
+	  Argument 4: [nfull] Installation d'Asterisk, Dahdi et Libpri.
+	  Argument 5: [ndahdi]  Installation d'asterisk et du module Dahdi.
+	  Argument 6: [nast]  Installation d'asterisk seule.
 
 	Exemples:
 	${Prog}  -i full	
@@ -219,6 +219,7 @@ ExistInstall() {
 		    FailMes "Attention ${1} est déjà présent sur /usr/local/src/${VerAst}"
         exit 9
 	    else
+        echo ""
       fi
     fi    
 	fi
