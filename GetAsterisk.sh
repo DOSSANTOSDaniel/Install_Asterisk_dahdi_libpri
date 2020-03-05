@@ -57,23 +57,23 @@ declare -a tab
 Usage() {
     cat <<USAGE
 	Usage: ${Prog} -option [arg] 
-	Option 1:   -i     Types d'installation.
+	Option 1:   -i     Types d'installations.
 	Option 2:   -v     Version.
 	Option 3:   -h     Aide.
 	
 	  Argument 1: [full]  Installation d'Asterisk, Dahdi et Libpri.
 	  Argument 2: [dahdi] Installation d'Asterisk et du module Dahdi.
-	  Argument 3: [ast] Installation d'Asterisk seule.
+	  Argument 3: [ast] Installation d'Asterisk seulement.
 
-    La configuration des comptes SIP ne sera pas faite!
+    La configuration des comptes SIP ne sera pas faite avec les arguments suivants!
 	  Argument 4: [nfull] Installation d'Asterisk, Dahdi et Libpri.
 	  Argument 5: [ndahdi]  Installation d'asterisk et du module Dahdi.
-	  Argument 6: [nast]  Installation d'asterisk seule.
+	  Argument 6: [nast]  Installation d'asterisk seulement.
 
 	Exemples:
 	${Prog}  -i full	
 	${Prog}  -i dahdi
-	${Prog}  -i noint
+	${Prog}  -i ast
 	${Prog}  -v
 	${Prog}  -h		
 USAGE
