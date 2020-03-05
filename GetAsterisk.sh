@@ -54,7 +54,7 @@ declare -a tab
 
 
 ### Déclaration des fonctions ###
-usage() {
+Usage() {
     cat <<USAGE
 	Usage: ${Prog} -option [arg] 
 	Option 1:   -i     Types d'installation.
@@ -200,14 +200,14 @@ Finish() {
 }
 
 ExistInstall() {
-	Inx=$(dpkg -s "${1}" | grep Status | awk '{print $2}' &> /dev/null)
+	Inx=$(dpkg -s "${1}" &> /dev/null | grep Status | awk '{print $2}')
 
 	if [ "${Inx}" == "install" ]
 	then
 		FailMes "Attention ${1} est déjà installé"
     exit 9
 	else 
-    if [[ $(type -a "${1}") == "0" ]]
+    if [[ $(type -a "${1}" &> /dev/null) == "0" ]]
 	  then
 		  FailMes "Attention ${1} est déjà installé"
       exit 9
