@@ -546,10 +546,12 @@ then
   exit 1
 elif [[ $# -lt "1" ]]
 then
-  echo "Il faut une option et un argument "
+  echo "Il faut une option et un argument"
+  exit 1
 elif [[ $1 =~ ^[^-.] ]]
 then
   echo "$1 n'est pas une option! "
+  exit 1
 fi
  
 while getopts ":i: :h :v" opt
