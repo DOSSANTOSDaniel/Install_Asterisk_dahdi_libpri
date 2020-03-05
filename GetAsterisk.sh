@@ -200,7 +200,7 @@ Finish() {
 }
 
 ExistInstall() {
-	Inx=$(dpkg -s "${1}" | grep Status | awk '{print $2}')
+	Inx=$(dpkg -s "${1}" | grep Status | awk '{print $2}' &> /dev/null)
 
 	if [ "${Inx}" == "install" ]
 	then
