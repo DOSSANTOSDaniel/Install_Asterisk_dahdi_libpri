@@ -219,7 +219,6 @@ ExistInstall() {
 		    FailMes "Attention ${1} est déjà présent sur /usr/local/src/${VerAst}"
         exit 9
 	    else
-		    InfoMes "Ok ${1} n'est pas installé sur cette machine !"
       fi
     fi    
 	fi
@@ -525,12 +524,6 @@ AppInstall() {
 }
 
 ### Code ###
-clear
-
-echo -e "\n ${Red} ####################################################### ${Neutral} \n"
-echo -e " ${Green}     Installation et configuration d'Asterisk 16        ${Neutral} "
-echo -e "\n ${Red} ####################################################### ${Neutral} \n"
-
 ExistInstall 'asterisk'
 
 # vérifier utilisateur
