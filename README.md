@@ -16,3 +16,10 @@ DESCRIPTION:
 |         | nast      | Installation d'Asterisk sans comptes SIP.                          |
 | -h      |           | Affiche l'aide.                                                    |
 | -v      |           | Affiche la version.                                                |
+
+### A faire
+- Permettre à l'utilisateur de choisir l'extension qu'il veut pour son compte SIP.
+- Utiliser une base de données.
+- Permettre à l'utilisateur de passer au script une liste des comptes SIP dans un fichier.
+- Permettre à l'utilisateur de choisir un contexte.
+- Limitation des comptes SIP à 999.
