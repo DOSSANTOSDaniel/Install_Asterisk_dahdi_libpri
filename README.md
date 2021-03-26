@@ -1,4 +1,4 @@
-# Script d'installation d'Asterisque, DAHDI et Libpri
+# Script d'installation d'Asterisk, DAHDI et Libpri
 
 USAGE:  ./GetAsterisk.sh -option [arg]
 
