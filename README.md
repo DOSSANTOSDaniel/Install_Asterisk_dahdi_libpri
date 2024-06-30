@@ -1,5 +1,7 @@
 # Script d'installation d'Asterisk, DAHDI et Libpri
-## En cours de fabrication !
+## Statut : En cours de création
+
+![Statut](https://img.shields.io/badge/statut-en%20développement-yellow)
 
 USAGE:  ./GetAsterisk.sh -option [arg]
 
